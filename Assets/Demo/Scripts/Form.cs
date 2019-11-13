@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
 [Serializable]
 public class FormDetais
@@ -31,17 +32,18 @@ public class Form : MonoBehaviour
 
     public RawImage image;
     WebCamTexture webcamTex = null;
+
+    byte[] webcamPicData;
     // Start is called before the first frame update
     void Start()
     {
-Debug.Log("startq");
         WebCamDevice[] devices = WebCamTexture.devices;
         string deviceName = devices[0].name;
         webcamTex = new WebCamTexture(deviceName);
         image.texture = webcamTex;
         image.material.mainTexture = webcamTex;
         webcamTex.Play();
-        
+
         form = new FormDetais();
         nameField.onEndEdit.AddListener(delegate { SetName(nameField); });
         emailField.onEndEdit.AddListener(delegate { SetEmail(emailField); });
@@ -81,25 +83,45 @@ Debug.Log("startq");
         form.rating = rating.text;
     }
 
- IEnumerator Post(string name , string email , string mobile , string city, string rating) {
+    IEnumerator Post(string name, string email, string mobile, string city, string rating)
+    {
+        yield return new WaitForEndOfFrame();
 
+        yield return new WaitUntil(() => isPicTaken == true);
+        // Create a Web Form
         WWWForm form1 = new WWWForm();
+
         form1.AddField("entry.1636821539", name);
         form1.AddField("entry.2063002654", email);
         form1.AddField("entry.228192549", mobile);
         form1.AddField("entry.39510437", city);
         form1.AddField("entry.292816243", rating);
-        byte[] rawData = form1.data;
-        WWW www = new WWW(BASE_URL, rawData);
-        yield return www;
+        https://docs.google.com/spreadsheets/d/1vtfqCmboew-_iK1Ejk_VHEPqpJYLi5pGQE4BImHGrKQ/edit#gid=696405161&range=H1
+        form1.AddBinaryData("Pic Upload", webcamPicData, name + ".png", "image/png");
+
+        // byte[] rawData = form1.data;
+        // WWW www = new WWW(BASE_URL, rawData);
+        using (var w = UnityWebRequest.Post(BASE_URL, form1))
+        {
+            yield return w.SendWebRequest();
+            if (w.isNetworkError || w.isHttpError)
+            {
+                Debug.Log(w.error);
+            }
+            else
+            {
+                Debug.Log("Finished Uploading Screenshot");
+            }
+        }
     }
 
     public void Submit()
     {
-        //StartCoroutine(TakePic());
-        StartCoroutine(Post(form.name , form.emailID , form.mobileNumber ,form.city ,form.rating));
+        isPicTaken = false;
+        StartCoroutine(TakePic());
+        StartCoroutine(Post(form.name, form.emailID, form.mobileNumber, form.city, form.rating));
         // string json = JsonUtility.ToJson(form);
-         Debug.Log("Form Details = " + form);
+        Debug.Log("Form Details = " + form);
 
     }
 
@@ -108,6 +130,7 @@ Debug.Log("startq");
         System.IO.File.WriteAllBytes(filename, texture.EncodeToPNG());
     }
 
+    bool isPicTaken;
     IEnumerator TakePic()
     {
 
@@ -132,7 +155,9 @@ Debug.Log("startq");
         yield return new WaitUntil(() => texture != null);
         image.texture = texture;
         SaveTextureToFile(texture, path);
- 
+        webcamPicData = texture.EncodeToPNG();
+        isPicTaken = true;
+
     }
 
 }
