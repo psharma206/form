@@ -403,6 +403,21 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 3523499274105826454, guid: d1d15a27c2f7319478c08a7b7f0d47ed,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3523499274105826454, guid: d1d15a27c2f7319478c08a7b7f0d47ed,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6850776939927439047, guid: d1d15a27c2f7319478c08a7b7f0d47ed,
+        type: 3}
+      propertyPath: path
+      value: C:/Users/RAHUL/Desktop/ImageCapture/
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d1d15a27c2f7319478c08a7b7f0d47ed, type: 3}
 --- !u!1 &1215479290

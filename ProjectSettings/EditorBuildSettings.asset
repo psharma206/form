@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Demo/Scenes/Form.unity
     guid: 84f64124e5cfe3a40b28375cc245a50c
+  - enabled: 1
+    path: Assets/Demo/Scenes/ARScene.unity
+    guid: c9f28c31b856a7e4a8d90b330914aac9
   m_configObjects: {}

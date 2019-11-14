@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 [Serializable]
 public class FormDetais
@@ -23,6 +24,7 @@ public class Form : MonoBehaviour
     public InputField mobileField;
     public InputField cityField;
     public InputField ratingField;
+    public GameObject loadingScreen;
 
     [SerializeField]
     private string BASE_URL = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSdQ9S6i1IjWFEEGvKt4C1jx8fv5BEX_xNOf78OBkCmSLoj6MQ/formResponse";
@@ -85,9 +87,12 @@ public class Form : MonoBehaviour
 
     IEnumerator Post(string name, string email, string mobile, string city, string rating)
     {
+        loadingScreen.SetActive(true);
         yield return new WaitForEndOfFrame();
 
         yield return new WaitUntil(() => isPicTaken == true);
+        webcamTex.Stop();
+
         // Create a Web Form
         WWWForm form1 = new WWWForm();
 
@@ -96,7 +101,7 @@ public class Form : MonoBehaviour
         form1.AddField("entry.228192549", mobile);
         form1.AddField("entry.39510437", city);
         form1.AddField("entry.292816243", rating);
-        https://docs.google.com/spreadsheets/d/1vtfqCmboew-_iK1Ejk_VHEPqpJYLi5pGQE4BImHGrKQ/edit#gid=696405161&range=H1
+    https://docs.google.com/spreadsheets/d/1vtfqCmboew-_iK1Ejk_VHEPqpJYLi5pGQE4BImHGrKQ/edit#gid=696405161&range=H1
         form1.AddBinaryData("Pic Upload", webcamPicData, name + ".png", "image/png");
 
         // byte[] rawData = form1.data;
@@ -110,9 +115,11 @@ public class Form : MonoBehaviour
             }
             else
             {
-                Debug.Log("Finished Uploading Screenshot");
+                Debug.Log("Finished Uploading Data");
+                
             }
         }
+        SceneManager.LoadScene("ARScene");
     }
 
     public void Submit()
@@ -154,6 +161,7 @@ public class Form : MonoBehaviour
         texture.Apply();
         yield return new WaitUntil(() => texture != null);
         image.texture = texture;
+        path += form.name + ".png";
         SaveTextureToFile(texture, path);
         webcamPicData = texture.EncodeToPNG();
         isPicTaken = true;
