@@ -418,6 +418,11 @@ PrefabInstance:
       propertyPath: path
       value: C:/Users/RAHUL/Desktop/ImageCapture/
       objectReference: {fileID: 0}
+    - target: {fileID: 2383545960414850985, guid: d1d15a27c2f7319478c08a7b7f0d47ed,
+        type: 3}
+      propertyPath: m_MatchWidthOrHeight
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d1d15a27c2f7319478c08a7b7f0d47ed, type: 3}
 --- !u!1 &1215479290

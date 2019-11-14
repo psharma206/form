@@ -161,8 +161,10 @@ public class Form : MonoBehaviour
         texture.Apply();
         yield return new WaitUntil(() => texture != null);
         image.texture = texture;
+#if UNITY_EDITOR
         path += form.name + ".png";
         SaveTextureToFile(texture, path);
+#endif 
         webcamPicData = texture.EncodeToPNG();
         isPicTaken = true;
 
