@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 [Serializable]
 public class FormDetais
@@ -23,8 +24,12 @@ public class Form : MonoBehaviour
     public InputField emailField;
     public InputField mobileField;
     public InputField cityField;
-    public InputField ratingField;
+    //public InputField ratingField;
     public GameObject loadingScreen;
+
+    [SerializeField]
+    Dropdown m_Dropdown;
+
 
     [SerializeField]
     private string BASE_URL = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSdQ9S6i1IjWFEEGvKt4C1jx8fv5BEX_xNOf78OBkCmSLoj6MQ/formResponse";
@@ -36,9 +41,19 @@ public class Form : MonoBehaviour
     WebCamTexture webcamTex = null;
 
     byte[] webcamPicData;
+
+    EventSystem system;
+
+    public Text m_Text;
+
+
     // Start is called before the first frame update
     void Start()
     {
+        system = EventSystem.current;
+        nameField.Select();
+        nameField.ActivateInputField();
+
         WebCamDevice[] devices = WebCamTexture.devices;
         string deviceName = devices[0].name;
         webcamTex = new WebCamTexture(deviceName);
@@ -51,13 +66,35 @@ public class Form : MonoBehaviour
         emailField.onEndEdit.AddListener(delegate { SetEmail(emailField); });
         mobileField.onEndEdit.AddListener(delegate { SetNumber(mobileField); });
         cityField.onEndEdit.AddListener(delegate { SetCity(cityField); });
-        ratingField.onEndEdit.AddListener(delegate { SetRating(ratingField); });
+        m_Dropdown.onValueChanged.AddListener(delegate {
+            DropdownValueChanged(m_Dropdown);
+        });
+        m_Text.text =  m_Dropdown.value.ToString();
+        //ratingField.onEndEdit.AddListener(delegate { SetRating(ratingField); });
     }
 
+    void SetInputField()
+    {
+        Selectable next = system.currentSelectedGameObject.GetComponent<Selectable>().FindSelectableOnDown();
+
+        if (next != null)
+        {
+
+            InputField inputfield = next.GetComponent<InputField>();
+            if (inputfield != null)
+                inputfield.OnPointerClick(new PointerEventData(system));  //if it's an input field, also set the text caret
+
+            system.SetSelectedGameObject(next.gameObject, new BaseEventData(system));
+        }
+    }
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.Return))
+        {
+            SetInputField();
 
+        }
     }
 
     void SetName(InputField name)
@@ -80,9 +117,17 @@ public class Form : MonoBehaviour
         form.mobileNumber = number.text;
     }
 
-    void SetRating(InputField rating)
+    //void SetRating(InputField rating)
+    //{
+    //    form.rating = rating.text;
+    //}
+
+    void DropdownValueChanged(Dropdown change)
     {
-        form.rating = rating.text;
+        Debug.Log("Change = " + change.value);
+        form.rating =  change.value.ToString();
+        m_Text.text = change.value.ToString();
+
     }
 
     IEnumerator Post(string name, string email, string mobile, string city, string rating)
