@@ -132,10 +132,11 @@ public class Form : MonoBehaviour
 
     IEnumerator Post(string name, string email, string mobile, string city, string rating)
     {
-        loadingScreen.SetActive(true);
         yield return new WaitForEndOfFrame();
 
         yield return new WaitUntil(() => isPicTaken == true);
+        loadingScreen.SetActive(true);
+
         webcamTex.Stop();
 
         // Create a Web Form
@@ -170,7 +171,9 @@ public class Form : MonoBehaviour
     public void Submit()
     {
         isPicTaken = false;
-        StartCoroutine(TakePic());
+        //StartCoroutine(TakePic());
+        StartCoroutine(TakeWholePic());
+
         StartCoroutine(Post(form.name, form.emailID, form.mobileNumber, form.city, form.rating));
         // string json = JsonUtility.ToJson(form);
         Debug.Log("Form Details = " + form);
@@ -211,6 +214,23 @@ public class Form : MonoBehaviour
         SaveTextureToFile(texture, path);
 #endif 
         webcamPicData = texture.EncodeToPNG();
+        isPicTaken = true;
+
+    }
+
+    IEnumerator TakeWholePic()
+    {
+        yield return new WaitForEndOfFrame();
+        var texture = ScreenCapture.CaptureScreenshotAsTexture();
+        path += form.name + ".png";
+
+        // do something with texture
+        SaveTextureToFile(texture, path);
+        yield return new WaitForSeconds(1f);
+        webcamPicData = texture.EncodeToPNG();
+
+        // cleanup
+        Destroy(texture);
         isPicTaken = true;
 
     }
